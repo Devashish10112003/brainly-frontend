@@ -1,7 +1,13 @@
 import { useState } from "react";
 import Drawer from "../components/Drawer";
-import Card from "../components/Card";
 import AddContentModal from "../components/Modals/AddContentModal";
+import NoteCard from "../components/NoteCard";
+import YouTubeCard from "../components/YouTubeCard";
+import TweetCard from "../components/TweetCard";
+import LinkCard from "../components/LinkCard";
+
+
+
 
 const Dashboard = () => {
 
@@ -37,9 +43,12 @@ const Dashboard = () => {
                         </div>
                         
                     </div>
-                    <div className="m-2 flex flex-row flex-wrap">
+                    <div className="m-2 flex flex-row flex-wrap overflow-auto flex-start">
                         {/* render the card components here */}
-                        <Card/>                        
+                        <div><NoteCard/></div>
+                        <div><YouTubeCard/></div>
+                        <div><TweetCard/></div>
+                        <div><LinkCard/></div>
                     </div>
                 </div>            
                 

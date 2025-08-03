@@ -9,7 +9,7 @@ const TweetEmbed = () => {
   }, []);
 
   return (
-    <blockquote className="twitter-tweet">
+    <blockquote className="twitter-tweet w-68">
       <a href="https://twitter.com/BowesChay/status/1951423906881138769"></a>
     </blockquote>
   );
