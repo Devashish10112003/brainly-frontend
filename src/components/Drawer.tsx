@@ -32,7 +32,7 @@ const Drawer=({activeTab,setActiveTab}:DrawerProps)=>{
     ]
 
 
-    return <div className={`${ isDrawerOpen ?'w-64':'w-20'} h-full border-r border-l border-black transition-[width] duration-300 ease-in-out`}>
+    return <div className={`${ isDrawerOpen ?'w-80':'w-20'} bg-white h-full border-r border-l border-black transition-[width] duration-300 ease-in-out`}>
         <div className="flex  items-center">
             <svg  xmlns="http://www.w3.org/2000/svg"  
                 width="60"  height="60"  viewBox="0 0 24 24"  fill="none"  
@@ -64,7 +64,7 @@ const Drawer=({activeTab,setActiveTab}:DrawerProps)=>{
                         isActive=false;
                     }
                     return (
-                    <div onClick={()=>{setActiveTab(item.name as DrawerTab)}} className={`flex items-center px-4 py-2 text-sm font-medium rounded-md ${
+                    <div onClick={()=>{setActiveTab(item.name as DrawerTab)}} className={`flex items-center px-4 py-2 text-md font-medium rounded-md ${
                         isActive
                             ? 'bg-indigo-100 text-indigo-700'
                             : 'text-gray-600 hover:bg-gray-50'
