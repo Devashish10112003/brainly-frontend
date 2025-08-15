@@ -1,4 +1,11 @@
-const LinkCard=()=>{
+interface LinkCardProps{
+    title:string,
+    body:string,
+    url:string,
+    date:string,
+}
+
+const LinkCard=({title,body,url,date}:LinkCardProps)=>{
     //for notes
     return <div className="break-inside-avoid bg-white m-2 p-2 rounded-md">
         <div className="flex p-2 justify-between">
@@ -6,7 +13,7 @@ const LinkCard=()=>{
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6 mr-2"> 
                     <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
                 </svg>
-                <h2 className="text-xl font-semibold w-32 text-ellipsis">Hey boy how you doing</h2>
+                <h2 className="text-xl font-semibold w-32 text-ellipsis">{title}</h2>
             </div>
             <div className="flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6 mx-2">
@@ -20,15 +27,15 @@ const LinkCard=()=>{
         {/* h-48 w-60 */}
         <div className="p-4 max-h-48 max-w-68 overflow-auto ">
             <p className="text-md">
-                ontrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by
+                {body}
             </p>
         </div>
         <div className="p-4 underline text-blue-700 font-semibold flex">
-            <a target="_blank" className="flex" href="https://www.google.com/search?q=disney+hotstar&rlz=1C1VDKB_enIN1091IN1091&oq=&gs_lcrp=EgZjaHJvbWUqCQgAECMYJxjqAjIJCAAQIxgnGOoCMgkIARAjGCcY6gIyCQgCECMYJxjqAjIJCAMQIxgnGOoCMgkIBBAjGCcY6gIyCQgFECMYJxjqAjIJCAYQIxgnGOoCMgkIBxAjGCcY6gLSAQo3Mjg3MjBqMGo3qAIIsAIB8QXu_H2l8ySQNw&sourceid=chrome&ie=UTF-8">
+            <a target="_blank" className="flex" href={url}>
             Link
             </a>
         </div>
-        <p className="p-2 text-gray-600 text-sm">Added on 10/02/25</p>
+        <p className="p-2 text-gray-600 text-sm">Added on {date}</p>
     </div>;
 }
 

@@ -1,4 +1,32 @@
-const YouTubeCard=()=>{
+interface YouTubeProps{
+    title:string,
+    body:string,
+    url:string,
+    date:string,
+}
+
+const YouTubeCard=({title,body,url,date}:YouTubeProps)=>{
+
+    function convertToEmbedUrl(youtubeUrl:string, startTimeInSeconds = 0) {
+        try {
+            const url = new URL(youtubeUrl);
+            const videoId = url.searchParams.get("v") || url.pathname.split("/").pop();
+
+            if (!videoId) throw new Error("Invalid YouTube URL");
+
+            const embedUrl = `https://www.youtube.com/embed/${videoId}${startTimeInSeconds ? `?start=${startTimeInSeconds}` : ""}`;
+            return embedUrl;
+        } catch (err) {
+            console.error("Invalid YouTube URL:", youtubeUrl);
+            return "null";
+        }
+    }
+
+    const embededUrl=convertToEmbedUrl(url);
+
+
+
+
     //for youtube
     return <div className="break-inside-avoid grow-0 break-inside-avoid bg-white m-2 p-2 rounded-md">
         <div className="flex p-2 justify-between">
@@ -6,7 +34,7 @@ const YouTubeCard=()=>{
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" className="icon icon-tabler icons-tabler-filled icon-tabler-brand-youtube mr-2"> <path stroke="none" d="M0 0h24v24H0z" fill="none"/> 
                     <path d="M18 3a5 5 0 0 1 5 5v8a5 5 0 0 1 -5 5h-12a5 5 0 0 1 -5 -5v-8a5 5 0 0 1 5 -5zm-9 6v6a1 1 0 0 0 1.514 .857l5 -3a1 1 0 0 0 0 -1.714l-5 -3a1 1 0 0 0 -1.514 .857z" />
                 </svg>
-                <h2 className="text-xl font-semibold w-32 text-ellipsis">Hey boy how you doing</h2>
+                <h2 className="text-xl font-semibold w-32 text-ellipsis">{title}</h2>
             </div>
             <div className="flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6 mx-2">
@@ -20,14 +48,14 @@ const YouTubeCard=()=>{
         {/*max-h-48 max-w-68  */}
         <div className="p-4 max-h-48 max-w-68 overflow-auto ">
             <p className="text-md">
-                ontrary to popular belief Malorum" (The Extremes of Good and Evil) by aaaaaaaaaaaaaaaaaaa ontrary to popular belief Malorum" (The Extremes of Good and Evil) by aaaaaaaaaaaaaaaaaaa ontrary to popular belief Malorum" (The Extremes of Good and Evil) by aaaaaaaaaaaaaaaaaaa
+                {body}
             </p>
         </div>
         <div className="p-2">
             <iframe
             width="250"
             height="150"
-            src="https://www.youtube.com/embed/bFEI-b2E1C0?start=2270"
+            src={embededUrl}
             title="YouTube video player"
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -35,7 +63,7 @@ const YouTubeCard=()=>{
             >
         </iframe>
         </div>
-        <p className="p-2 text-gray-600">Added on 10/02/25</p>
+        <p className="p-2 text-gray-600">Added on {date}</p>
     </div>;
 }
 

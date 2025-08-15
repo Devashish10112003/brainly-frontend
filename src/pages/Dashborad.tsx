@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import Drawer from "../components/Drawer";
 import AddContentModal from "../components/Modals/AddContentModal";
 import NoteCard from "../components/NoteCard";
@@ -6,13 +6,140 @@ import YouTubeCard from "../components/YouTubeCard";
 import TweetCard from "../components/TweetCard";
 import LinkCard from "../components/LinkCard";
 
+type DrawerTab='NOTE' | 'TWEET' | 'VIDEO' | 'LINK'
 
+
+interface contentType{
+    title:string,
+    body:string,
+    url:string|null,
+    type:DrawerTab,
+    id:string,
+    createdAt:string,
+    userId:string
+}
 
 
 const Dashboard = () => {
 
     const [selectedTab, setSelectedTab] = useState<'Dashboard' | 'Twitter' | 'Youtube' | 'Links' | 'Notes'>('Dashboard');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [contentData,setContentData]=useState<contentType[]>([
+        {
+            title:"Hey boy how you doing",
+            body:'ontrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by',
+            url:null,
+            type:"NOTE",
+            id:"1",
+            createdAt:"10/02/25",
+            userId:"BLAH"
+        },
+        {
+            title:"Hey boy how you doing",
+            body:'ontrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by',
+            url:"https://www.youtube.com/watch?v=-sF5KsEo6gM",
+            type:"VIDEO",
+            id:"1",
+            createdAt:"10/02/25",
+            userId:"BLAH"
+        },
+        {
+            title:"Hey boy how you doing",
+            body:'ontrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by',
+            url:"https://twitter.com/BowesChay/status/1951423906881138769",
+            type:"TWEET",
+            id:"1",
+            createdAt:"10/02/25",
+            userId:"BLAH"
+        },
+        {
+            title:"Hey boy how you doing",
+            body:'ontrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by',
+            url:"https://www.google.com/search?q=disney+hotstar&rlz=1C1VDKB_enIN1091IN1091&oq=&gs_lcrp=EgZjaHJvbWUqCQgAECMYJxjqAjIJCAAQIxgnGOoCMgkIARAjGCcY6gIyCQgCECMYJxjqAjIJCAMQIxgnGOoCMgkIBBAjGCcY6gIyCQgFECMYJxjqAjIJCAYQIxgnGOoCMgkIBxAjGCcY6gLSAQo3Mjg3MjBqMGo3qAIIsAIB8QXu_H2l8ySQNw&sourceid=chrome&ie=UTF-8",
+            type:"LINK",
+            id:"1",
+            createdAt:"10/02/25",
+            userId:"BLAH"
+        }
+
+    ]);
+
+    // useEffect(() => {
+    // const fetchContents = async () => {
+    //     try {
+    //         const res = await fetch("/api/contents"); // replace with your backend URL
+    //         if (!res.ok) throw new Error("Failed to fetch contents");
+
+    //         const data: contentType[] = await res.json();
+    //         setContentData(data);
+    //     } catch (err) {
+    //         console.error(err);
+    //     }
+    //     };
+
+    //     fetchContents();
+    // }, []);
+
+    const renderCard = (content: contentType) => {
+        const formattedDate = new Date(content.createdAt).toLocaleDateString("en-GB"); // "dd/mm/yyyy"
+
+        switch (content.type) 
+        {
+            case "NOTE":
+                return (
+                <NoteCard
+                    title={content.title}
+                    body={content.body}
+                    date={formattedDate}
+                />
+                );
+
+            case "VIDEO":
+                return (
+                <YouTubeCard
+                    title={content.title}
+                    body={content.body}
+                    url={content.url!}
+                    date={formattedDate}
+                />
+                );
+                
+            case "TWEET":
+                return (
+                <TweetCard
+                    title={content.title}
+                    body={content.body}
+                    url={content.url!}
+                    date={formattedDate}
+                />
+                );
+
+            case "LINK":
+                return (
+                <LinkCard
+                    title={content.title}
+                    body={content.body}
+                    url={content.url!}
+                    date={formattedDate}
+                />
+                );
+
+            default:
+                return null;
+        }
+    };
+
+    const filteredContents =
+    selectedTab === "Dashboard"
+      ? contentData
+      : contentData.filter((c) => {
+          if (selectedTab === "Notes") return c.type === "NOTE";
+          if (selectedTab === "Youtube") return c.type === "VIDEO";
+          if (selectedTab === "Twitter") return c.type === "TWEET";
+          if (selectedTab === "Links") return c.type === "LINK";
+          return false;
+        });
+
 
     return(
         <div>
@@ -44,14 +171,17 @@ const Dashboard = () => {
                         
                     </div>
                     <div className="m-2 flex flex-row flex-wrap overflow-auto flex-start">
-                        {/* render the card components here */}
-                        <div><NoteCard/></div>
-                        <div><YouTubeCard/></div>
-                        <div><TweetCard/></div>
-                        <div><LinkCard/></div>
+                        {filteredContents.map((content) =>
+                        selectedTab === "Dashboard" ? (
+                            <div key={content.id}>{renderCard(content)}</div>
+                        ) : (
+                            <div key={content.id} className="m-2">
+                            {renderCard(content)}
+                            </div>
+                        )
+                        )}
                     </div>
                 </div>            
-                
             </div>
             {isModalOpen&&<AddContentModal closeModal={()=>{setIsModalOpen(false)}}/>}
         </div>

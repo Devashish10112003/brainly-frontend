@@ -1,13 +1,20 @@
+interface TweetCardProp{
+    title:string,
+    body:string,
+    url:string,
+    date:string,
+}
+
 import TweetEmbed from "./TweetEmbed"
 
-const TweetCard=()=>{
+const TweetCard=({title,body,url,date}:TweetCardProp)=>{
     return <div className="break-inside-avoid bg-white m-2 p-2 rounded-md">
         <div className="flex p-2 justify-between">
             <div className="flex items-center">
                 <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  className="icon icon-tabler icons-tabler-outline icon-tabler-brand-x mr-2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 4l11.733 16h4.267l-11.733 -16z" />
                     <path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772" />
                 </svg>
-                <h2 className="text-xl font-semibold w-32 text-ellipsis">Hey boy how you doing</h2>
+                <h2 className="text-xl font-semibold w-32 text-ellipsis">{title}</h2>
             </div>
             <div className="flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6 mx-2">
@@ -21,13 +28,13 @@ const TweetCard=()=>{
         {/* max-h-48 max-w-60 */}
         <div className="p-4 max-h-48 max-w-68 overflow-auto ">
             <p className="text-md">
-                ontrary to popular belief Malorum" (The Extremes of Good and Evil) by aaaaaaaaaaaaaaaaaaa ontrary to popular belief Malorum" (The Extremes of Good and Evil) by aaaaaaaaaaaaaaaaaaa ontrary to popular belief Malorum" (The Extremes of Good and Evil) by aaaaaaaaaaaaaaaaaaa
+                {body}
             </p>
         </div>
         <div >
-            <TweetEmbed/>
+            <TweetEmbed url={url}/>
         </div>
-        <p className="p-2 text-gray-600 text-sm">Added on 10/02/25</p>
+        <p className="p-2 text-gray-600 text-sm">Added on {date}</p>
     </div>;
 }
 

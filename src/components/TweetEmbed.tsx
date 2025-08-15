@@ -1,6 +1,11 @@
 import { useEffect } from "react";
 
-const TweetEmbed = () => {
+interface prop{
+  url:string,
+}
+
+
+const TweetEmbed = ({url}:prop) => {
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://platform.twitter.com/widgets.js";
@@ -10,7 +15,7 @@ const TweetEmbed = () => {
 
   return (
     <blockquote className="twitter-tweet w-68">
-      <a href="https://twitter.com/BowesChay/status/1951423906881138769"></a>
+      <a href={url}></a>
     </blockquote>
   );
 };
