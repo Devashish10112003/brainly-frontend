@@ -1,6 +1,7 @@
 import { useState,useEffect } from "react";
 import Drawer from "../components/Drawer";
 import AddContentModal from "../components/Modals/AddContentModal";
+import ShareBrainModal from "../components/Modals/ShareBrainModal";
 import NoteCard from "../components/NoteCard";
 import YouTubeCard from "../components/YouTubeCard";
 import TweetCard from "../components/TweetCard";
@@ -24,6 +25,7 @@ const Dashboard = () => {
 
     const [selectedTab, setSelectedTab] = useState<'Dashboard' | 'Twitter' | 'Youtube' | 'Links' | 'Notes'>('Dashboard');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isShareOpen, setIsShareOpen] = useState(false);
     const [contentData,setContentData]=useState<contentType[]>([
         {
             title:"Hey boy how you doing",
@@ -64,7 +66,7 @@ const Dashboard = () => {
 
     ]);
 
-    // useEffect(() => {
+    useEffect(() => {
     // const fetchContents = async () => {
     //     try {
     //         const res = await fetch("/api/contents"); // replace with your backend URL
@@ -78,7 +80,21 @@ const Dashboard = () => {
     //     };
 
     //     fetchContents();
-    // }, []);
+    }, []);
+
+    const handleAddContent=async (newContent: {
+        type: string;
+        title: string;
+        body: string;
+        url: string|null;
+    }) => {
+        console.log(newContent);
+        //axios request to update data in the backend and refetch the data
+    };
+
+    const deleteContent=async (id:string)=>{
+        console.log(id);
+    };
 
     const renderCard = (content: contentType) => {
         const formattedDate = new Date(content.createdAt).toLocaleDateString("en-GB"); // "dd/mm/yyyy"
@@ -88,39 +104,48 @@ const Dashboard = () => {
             case "NOTE":
                 return (
                 <NoteCard
+                    id={content.id}
                     title={content.title}
                     body={content.body}
                     date={formattedDate}
+                    onDelete={()=>{deleteContent(content.id)}}
                 />
                 );
 
             case "VIDEO":
                 return (
                 <YouTubeCard
+                    id={content.id}
                     title={content.title}
                     body={content.body}
                     url={content.url!}
                     date={formattedDate}
+                    onDelete={()=>{deleteContent(content.id)}}
+
                 />
                 );
                 
             case "TWEET":
                 return (
                 <TweetCard
+                    id={content.id}
                     title={content.title}
                     body={content.body}
                     url={content.url!}
                     date={formattedDate}
+                    onDelete={()=>{deleteContent(content.id)}}
                 />
                 );
 
             case "LINK":
                 return (
                 <LinkCard
+                    id={content.id}
                     title={content.title}
                     body={content.body}
                     url={content.url!}
                     date={formattedDate}
+                    onDelete={()=>{deleteContent(content.id)}}
                 />
                 );
 
@@ -143,7 +168,7 @@ const Dashboard = () => {
 
     return(
         <div>
-            <div className={`flex flex-row h-screen bg-gray-100 opacity-25 ${isModalOpen?'opacity-25':'opacity-100'}`}>
+            <div className={`flex flex-row h-screen bg-gray-100 opacity-25 ${isModalOpen || isShareOpen?'opacity-25':'opacity-100'}`}>
                 <Drawer activeTab={selectedTab} setActiveTab={setSelectedTab}></Drawer>
                 <div className="flex flex-col w-full ml-2">
                     <div className="flex justify-between items-center w-full h-20">
@@ -160,7 +185,7 @@ const Dashboard = () => {
                                 </div>
                             </button>
                             <button className="bg-indigo-200 rounded-md mr-4 hover:bg-indigo-300 ">
-                                <div className="flex h-12 p-4 justify-center items-center text-indigo-600 font-semibold">
+                                <div className="flex h-12 p-4 justify-center items-center text-indigo-600 font-semibold" onClick={()=>{setIsShareOpen(true);}}>
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6 mr-4">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z" />
                                     </svg>
@@ -183,7 +208,8 @@ const Dashboard = () => {
                     </div>
                 </div>            
             </div>
-            {isModalOpen&&<AddContentModal closeModal={()=>{setIsModalOpen(false)}}/>}
+            {isModalOpen&&<AddContentModal closeModal={()=>{setIsModalOpen(false)}} handleAddContent={handleAddContent}/>}
+            {isShareOpen&&<ShareBrainModal closeModal={()=>{setIsShareOpen(false)}}/>} 
         </div>
        
     );
