@@ -1,20 +1,22 @@
 import { useState,useEffect } from "react";
-import Drawer from "../components/Drawer";
+import Drawer,{ type DrawerTab } from "../components/Drawer";
 import AddContentModal from "../components/Modals/AddContentModal";
 import ShareBrainModal from "../components/Modals/ShareBrainModal";
 import NoteCard from "../components/NoteCard";
 import YouTubeCard from "../components/YouTubeCard";
 import TweetCard from "../components/TweetCard";
 import LinkCard from "../components/LinkCard";
+import ChatBot from "../components/ChatBot";
+import ChatBotButton from "../components/ChatBotButton";
 
-type DrawerTab='NOTE' | 'TWEET' | 'VIDEO' | 'LINK'
+type ContentCategory='NOTE' | 'TWEET' | 'VIDEO' | 'LINK'
 
 
 interface contentType{
     title:string,
     body:string,
     url:string|null,
-    type:DrawerTab,
+    type:ContentCategory,
     id:string,
     createdAt:string,
     userId:string
@@ -23,9 +25,10 @@ interface contentType{
 
 const Dashboard = () => {
 
-    const [selectedTab, setSelectedTab] = useState<'Dashboard' | 'Twitter' | 'Youtube' | 'Links' | 'Notes'>('Dashboard');
+    const [selectedTab, setSelectedTab] = useState<DrawerTab>('Dashboard');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isShareOpen, setIsShareOpen] = useState(false);
+    const [isChatBotOpen, setIsChatBotOpen] = useState(false);
     const [contentData,setContentData]=useState<contentType[]>([
         {
             title:"Hey boy how you doing",
@@ -168,7 +171,7 @@ const Dashboard = () => {
 
     return(
         <div>
-            <div className={`flex flex-row h-screen bg-gray-100 opacity-25 ${isModalOpen || isShareOpen?'opacity-25':'opacity-100'}`}>
+            <div className={`flex flex-row h-screen bg-gray-100 transition-opacity duration-300 ${isModalOpen || isShareOpen || isChatBotOpen ?'opacity-40':'opacity-100'}`}>
                 <Drawer activeTab={selectedTab} setActiveTab={setSelectedTab}></Drawer>
                 <div className="flex flex-col w-full ml-2">
                     <div className="flex justify-between items-center w-full h-20">
@@ -210,6 +213,8 @@ const Dashboard = () => {
             </div>
             {isModalOpen&&<AddContentModal closeModal={()=>{setIsModalOpen(false)}} handleAddContent={handleAddContent}/>}
             {isShareOpen&&<ShareBrainModal closeModal={()=>{setIsShareOpen(false)}}/>} 
+            <ChatBot isOpen={isChatBotOpen} onClose={() => setIsChatBotOpen(false)} />
+            <ChatBotButton onClick={() => setIsChatBotOpen(true)} />
         </div>
        
     );

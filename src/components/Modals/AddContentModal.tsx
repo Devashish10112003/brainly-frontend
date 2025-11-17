@@ -53,7 +53,8 @@ const AddContentModal=({closeModal,handleAddContent}:AddContentModalProps)=>{
 
     return <div className="overlay h-full w-full absolute top-0 left-0 flex items-center justify-center" onClick={closeModal}>
         <div className="popup flex items-center justify-center" onClick={(e)=>{e.stopPropagation()}}>
-            <form onSubmit={handleSubmit} className={`w-128 bg-indigo-200 rounded-md ${isUrl(selectType)?'h-108':'h-90'}`}>
+            <form onSubmit={handleSubmit} className={`w-128 bg-indigo-200 rounded-md ${isUrl(selectType)?'h-128':'h-108'}`}>
+                <h2 className="text-2xl font-bold text-indigo-800 text-center pt-8">Add Content</h2>
                 <div className="flex justify-center pt-2 mt-8">
                     {buttons.map((item)=>{
                         let isActive:boolean;

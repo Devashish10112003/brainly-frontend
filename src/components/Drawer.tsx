@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-type DrawerTab='Dashboard' | 'Twitter' | 'Youtube' | 'Links' | 'Notes'
+export type DrawerTab='Dashboard' | 'Twitter' | 'Youtube' | 'Links' | 'Notes';
 
 interface DrawerProps {
   activeTab: DrawerTab;
