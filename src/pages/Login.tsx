@@ -24,10 +24,10 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:5000/api/v1/auth/login', formData);
+      const response = await axios.post('/auth/login', formData);
       
       if (response.data.success) {
-        navigate('/assistant');
+        navigate('/dashboard');
       }
     } catch (error) {
       console.error('Login error:', error);

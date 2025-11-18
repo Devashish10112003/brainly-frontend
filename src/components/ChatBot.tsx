@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import TextareaAutosize from "react-textarea-autosize";
+import axios from "../utils/axios";
 
 interface ChatBotProps {
   isOpen: boolean;
@@ -23,6 +24,7 @@ const ChatBot = ({ isOpen, onClose }: ChatBotProps) => {
     },
   ]);
   const [inputValue, setInputValue] = useState("");
+  const [isSending, setIsSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -35,7 +37,7 @@ const ChatBot = ({ isOpen, onClose }: ChatBotProps) => {
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inputValue.trim()) return;
+    if (!inputValue.trim() || isSending) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -47,16 +49,36 @@ const ChatBot = ({ isOpen, onClose }: ChatBotProps) => {
     setMessages((prev) => [...prev, userMessage]);
     setInputValue("");
 
-    // Simulate bot response (replace with actual API call)
-    setTimeout(() => {
+    setIsSending(true);
+    try {
+      const res = await axios.post("/bot/ask", { message: userMessage.text });
+
+      if (!res.data?.success) {
+        throw new Error(res.data?.message || "Failed to get response");
+      }
+
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: "I'm processing your request. This is a placeholder response. Connect me to your AI API to get real responses!",
+        text:
+          res.data.result ||
+          "I'm here, but I couldn't understand the response. Please try again.",
         sender: "bot",
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, botMessage]);
-    }, 1000);
+    } catch (error) {
+      console.error(error);
+      const errorMessage: Message = {
+        id: (Date.now() + 2).toString(),
+        text:
+          "Sorry, I couldn't reach the AI service. Please check your connection or try again later.",
+        sender: "bot",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setIsSending(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -166,7 +188,10 @@ const ChatBot = ({ isOpen, onClose }: ChatBotProps) => {
             />
             <button
               type="submit"
-              className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
+              disabled={isSending}
+              className={`bg-indigo-600 text-white px-6 py-2 rounded-lg transition-colors ${
+                isSending ? "opacity-50 cursor-not-allowed" : "hover:bg-indigo-700"
+              }`}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

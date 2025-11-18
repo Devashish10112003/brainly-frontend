@@ -1,4 +1,5 @@
-import { useState,useEffect } from "react";
+import { useState,useEffect,useCallback,useMemo } from "react";
+import axios from "../utils/axios"
 import Drawer,{ type DrawerTab } from "../components/Drawer";
 import AddContentModal from "../components/Modals/AddContentModal";
 import ShareBrainModal from "../components/Modals/ShareBrainModal";
@@ -22,6 +23,13 @@ interface contentType{
     userId:string
 }
 
+
+const tabTypeMap: Record<Exclude<DrawerTab,'Dashboard'>, ContentCategory> = {
+    Notes: "NOTE",
+    Twitter: "TWEET",
+    Youtube: "VIDEO",
+    Links: "LINK",
+};
 
 const Dashboard = () => {
 
@@ -69,21 +77,22 @@ const Dashboard = () => {
 
     ]);
 
-    useEffect(() => {
-    // const fetchContents = async () => {
-    //     try {
-    //         const res = await fetch("/api/contents"); // replace with your backend URL
-    //         if (!res.ok) throw new Error("Failed to fetch contents");
+    const fetchContents = useCallback(async () => {
+        try {
+            const res = await axios.get('/content/get-content'); // replace with your backend URL
+            if (!res.data.success) throw new Error("Failed to fetch contents");
 
-    //         const data: contentType[] = await res.json();
-    //         setContentData(data);
-    //     } catch (err) {
-    //         console.error(err);
-    //     }
-    //     };
-
-    //     fetchContents();
+            const data: contentType[] = await res.data.contents;
+            setContentData(data);
+            console.log(data);
+        } catch (err) {
+            console.error(err);
+        }
     }, []);
+
+    useEffect(() => {
+        fetchContents();
+    }, [fetchContents]);
 
     const handleAddContent=async (newContent: {
         type: string;
@@ -92,11 +101,32 @@ const Dashboard = () => {
         url: string|null;
     }) => {
         console.log(newContent);
+        try
+        {
+            const res = await axios.post('/content/add-content', newContent);
+            if (!res.data.success) throw new Error("Failed to add content");
+            
+            //setContentData([...contentData, data]);
+            await fetchContents();
+        } catch (err){
+            console.error(err);
+        }
+
         //axios request to update data in the backend and refetch the data
     };
 
     const deleteContent=async (id:string)=>{
         console.log(id);
+        try
+        {
+            const res = await axios.delete('/content/delete-content',{
+                data:{contentId:id}
+            });
+            if (!res.data.success) throw new Error("Failed to delete content");
+            await fetchContents();
+        } catch (err){
+            console.error(err);
+        }
     };
 
     const renderCard = (content: contentType) => {
@@ -157,16 +187,14 @@ const Dashboard = () => {
         }
     };
 
-    const filteredContents =
-    selectedTab === "Dashboard"
-      ? contentData
-      : contentData.filter((c) => {
-          if (selectedTab === "Notes") return c.type === "NOTE";
-          if (selectedTab === "Youtube") return c.type === "VIDEO";
-          if (selectedTab === "Twitter") return c.type === "TWEET";
-          if (selectedTab === "Links") return c.type === "LINK";
-          return false;
-        });
+    const filteredContents = useMemo(() => {
+        if (selectedTab === "Dashboard") {
+            return contentData;
+        }
+
+        const mappedType = tabTypeMap[selectedTab as Exclude<DrawerTab,'Dashboard'>];
+        return contentData.filter((content) => content.type === mappedType);
+    }, [selectedTab, contentData]);
 
 
     return(

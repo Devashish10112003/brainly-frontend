@@ -25,10 +25,10 @@ export default function Singup() {
     setIsLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', formData);
+      const response = await axios.post('/auth/signup', formData);
       
       if (response.data.success) {
-        navigate('/assistant');
+        navigate('/dashboard');
       }
     } catch (error) {
       console.error('Login error:', error);
