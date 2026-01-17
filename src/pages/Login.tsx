@@ -4,7 +4,7 @@ import axios from '../utils/axios.ts';
 
 export default function Login() {
   const [formData, setFormData] = useState({
-    email: '',
+    username: '',
     password: ''
   });
   const [error, setError] = useState<string>('');
@@ -53,11 +53,11 @@ export default function Login() {
 
         <form className="space-y-6" onSubmit={handleSubmit}>
           <input
-            type="email"
-            name="email"
+            type="text"
+            name="username"
             required
-            placeholder="Email"
-            value={formData.email}
+            placeholder="Username"
+            value={formData.username}
             onChange={handleChange}
             className="w-full px-4 py-3 border border-gray-300 rounded-md placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-1 focus:ring-indigo-600 focus:border-indigo-600"
           />
