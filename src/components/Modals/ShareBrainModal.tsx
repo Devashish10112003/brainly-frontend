@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import axios from "../../utils/axios";
 
 interface ShareBrainModalProps{
     closeModal: () => void;
@@ -8,12 +9,32 @@ const ShareBrainModal=({closeModal}:ShareBrainModalProps)=>{
 
     const [copied, setCopied] = useState(false);
     const [link, setLink]=useState("");
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState("");
 
     useEffect(()=>{
-        setLink("BLAH");
+        const shareBrain = async () => {
+            setIsLoading(true);
+            setError("");
+            try {
+                const res = await axios.post('/share/brain', { share: true });
+                if (res.data.success) {
+                    // Convert backend URL to frontend URL
+                    const backendUrl = res.data.link;
+                    const frontendUrl = backendUrl.replace('/api/v1/share/', '/share/');
+                    setLink(`${window.location.origin}${frontendUrl}`);
+                } else {
+                    setError("Failed to generate share link");
+                }
+            } catch (err) {
+                console.error("Failed to share brain:", err);
+                setError("Failed to generate share link");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        shareBrain();
     },[]);
-
-    
 
     const handleCopy = () => {
     navigator.clipboard.writeText(link)
@@ -30,13 +51,20 @@ const ShareBrainModal=({closeModal}:ShareBrainModalProps)=>{
         <div className="popup flex items-center justify-center" onClick={(e)=>{e.stopPropagation()}}>
             <div className={`w-128 bg-indigo-200 rounded-md h-64 flex flex-col`}>
                 <h2 className="text-2xl font-bold text-indigo-800 text-center pt-8">Share Your Brain!</h2>
+                {error && (
+                    <div className="text-red-600 text-sm text-center px-10 mt-2">{error}</div>
+                )}
                 <div className="flex items-center justify-center flex-1 px-10">
-                    <input 
-                        type="text" 
-                        value={link}
-                        readOnly
-                        className="bg-indigo-50 flex-1 p-3 rounded-md border border-indigo-500 text-gray-800"
-                    />
+                    {isLoading ? (
+                        <div className="text-indigo-800">Generating link...</div>
+                    ) : (
+                        <input 
+                            type="text" 
+                            value={link}
+                            readOnly
+                            className="bg-indigo-50 flex-1 p-3 rounded-md border border-indigo-500 text-gray-800"
+                        />
+                    )}
                     <button 
                         onClick={handleCopy} 
                         className="ml-2 p-3 bg-indigo-800 rounded-md text-white hover:bg-indigo-400 transition-colors"

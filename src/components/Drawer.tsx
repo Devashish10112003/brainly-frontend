@@ -1,14 +1,21 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import axios from "../utils/axios";
+import { useNavigate } from "react-router-dom";
 export type DrawerTab='Dashboard' | 'Twitter' | 'Youtube' | 'Links' | 'Notes';
 
 interface DrawerProps {
   activeTab: DrawerTab;
   setActiveTab: (tab: DrawerTab) => void;
+  showProfile?: boolean;
 }
 
-const Drawer=({activeTab,setActiveTab}:DrawerProps)=>{
-
+const Drawer=({activeTab,setActiveTab,showProfile=true}:DrawerProps)=>{
     const [isDrawerOpen,setIsDrawerOpen]=useState(window.innerWidth>=768)
+    const [isProfileOpen,setIsProfileOpen]=useState(false)
+    const [userInfo,setUserInfo]=useState<{username:string,email:string} | null>(null)
+    const [isLoadingUser, setIsLoadingUser] = useState(false)
+    const profileRef = useRef<HTMLDivElement>(null)
+    const navigate = useNavigate()
 
     useEffect(()=>{
         const handleResize = () =>{
@@ -23,6 +30,58 @@ const Drawer=({activeTab,setActiveTab}:DrawerProps)=>{
         return ()=>window.removeEventListener('resize',handleResize);
     },[])
 
+    useEffect(() => {
+        if (showProfile) {
+            const fetchUserInfo = async () => {
+                setIsLoadingUser(true);
+                try {
+                    const res = await axios.get('/auth/user');
+                    console.log('User info response:', res.data);
+                    if (res.data.success && res.data.user) {
+                        setUserInfo(res.data.user);
+                    } else {
+                        console.error('Failed to fetch user info: Invalid response', res.data);
+                    }
+                } catch (err: any) {
+                    console.error('Failed to fetch user info:', err);
+                    if (err.response?.status === 401) {
+                        // User not authenticated, redirect to login
+                        navigate('/login');
+                    }
+                } finally {
+                    setIsLoadingUser(false);
+                }
+            };
+            fetchUserInfo();
+        }
+    }, [showProfile, navigate])
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+                setIsProfileOpen(false);
+            }
+        };
+
+        if (isProfileOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isProfileOpen])
+
+    const handleLogout = async () => {
+        try {
+            await axios.post('/auth/logout');
+            navigate('/login');
+        } catch (err) {
+            console.error('Logout failed:', err);
+            navigate('/login');
+        }
+    }
+
     const navigation=[
         {name: 'Dashboard',svg: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" /></svg>},
         {name: 'Twitter', svg: <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  className="icon icon-tabler icons-tabler-outline icon-tabler-brand-x"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 4l11.733 16h4.267l-11.733 -16z" /><path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772" /></svg>},
@@ -32,7 +91,7 @@ const Drawer=({activeTab,setActiveTab}:DrawerProps)=>{
     ]
 
 
-    return <div className={`${ isDrawerOpen ?'w-80':'w-20'} bg-white h-full border-r border-l border-black transition-[width] duration-300 ease-in-out`}>
+    return <div className={`${ isDrawerOpen ?'w-80':'w-20'} bg-white h-full border-r border-l border-black transition-[width] duration-300 ease-in-out relative flex flex-col`}>
         <div className="flex  items-center">
             <svg  xmlns="http://www.w3.org/2000/svg"  
                 width="60"  height="60"  viewBox="0 0 24 24"  fill="none"  
@@ -51,7 +110,7 @@ const Drawer=({activeTab,setActiveTab}:DrawerProps)=>{
             
         
         </div>
-        <nav className="flex-1 px-2 py-4 space-y-1">
+        <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
             
                 {navigation.map((item) => {
                     let isActive:boolean;
@@ -76,6 +135,53 @@ const Drawer=({activeTab,setActiveTab}:DrawerProps)=>{
                     );
                 })}
             </nav>
+            {showProfile && (
+                <div className="border-t border-gray-200 p-4 mt-auto bg-white">
+                    {isLoadingUser ? (
+                        <div className="flex items-center">
+                            <div className="w-10 h-10 rounded-full bg-gray-300 animate-pulse"></div>
+                            {isDrawerOpen && (
+                                <div className="ml-3 h-4 w-24 bg-gray-300 animate-pulse rounded"></div>
+                            )}
+                        </div>
+                    ) : userInfo ? (
+                        <div className="relative" ref={profileRef}>
+                            <div 
+                                onClick={() => setIsProfileOpen(!isProfileOpen)}
+                                className="flex items-center cursor-pointer hover:bg-gray-50 rounded-md p-2"
+                            >
+                                <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center text-white font-semibold flex-shrink-0">
+                                    {userInfo.username.charAt(0).toUpperCase()}
+                                </div>
+                                {isDrawerOpen && (
+                                    <div className="ml-3 flex-1 min-w-0">
+                                        <p className="text-sm font-semibold text-gray-900 truncate">{userInfo.username}</p>
+                                    </div>
+                                )}
+                            </div>
+                            {isProfileOpen && (
+                                <div className="absolute bottom-full left-0 right-0 mb-2 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden z-50">
+                                    <div className="p-4 border-b border-gray-200">
+                                        <p className="text-sm font-semibold text-gray-900">{userInfo.username}</p>
+                                        <p className="text-xs text-gray-500 mt-1">{userInfo.email}</p>
+                                    </div>
+                                    <button
+                                        onClick={handleLogout}
+                                        className="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5 mr-2">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" />
+                                        </svg>
+                                        Log out
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <div className="text-xs text-gray-500">Failed to load user info</div>
+                    )}
+                </div>
+            )}
     </div>
 }
 
