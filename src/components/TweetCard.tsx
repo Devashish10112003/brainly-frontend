@@ -1,4 +1,3 @@
-import { useState } from "react";
 import axios from "../utils/axios";
 import TweetEmbed from "./TweetEmbed"
 
@@ -12,10 +11,7 @@ interface TweetCardProp{
 }
 
 const TweetCard=({title,body,url,date,id,onDelete}:TweetCardProp)=>{
-    const [isSharing, setIsSharing] = useState(false);
-
     const handleShare = async () => {
-        setIsSharing(true);
         try {
             await axios.post('/share/content', { contentId: id });
             const shareUrl = `${window.location.origin}/content/${id}`;
@@ -23,8 +19,6 @@ const TweetCard=({title,body,url,date,id,onDelete}:TweetCardProp)=>{
             window.open(shareUrl, '_blank');
         } catch (err) {
             console.error('Failed to share content:', err);
-        } finally {
-            setIsSharing(false);
         }
     };
     return <div className="break-inside-avoid bg-white m-2 p-2 rounded-md">

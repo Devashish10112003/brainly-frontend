@@ -1,4 +1,3 @@
-import { useState } from "react";
 import axios from "../utils/axios";
 
 interface YouTubeProps{
@@ -11,10 +10,7 @@ interface YouTubeProps{
 }
 
 const YouTubeCard=({title,body,url,date,id,onDelete}:YouTubeProps)=>{
-    const [isSharing, setIsSharing] = useState(false);
-
     const handleShare = async () => {
-        setIsSharing(true);
         try {
             await axios.post('/share/content', { contentId: id });
             const shareUrl = `${window.location.origin}/content/${id}`;
@@ -22,8 +18,6 @@ const YouTubeCard=({title,body,url,date,id,onDelete}:YouTubeProps)=>{
             window.open(shareUrl, '_blank');
         } catch (err) {
             console.error('Failed to share content:', err);
-        } finally {
-            setIsSharing(false);
         }
     };
 

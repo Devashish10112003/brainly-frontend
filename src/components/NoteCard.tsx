@@ -1,4 +1,3 @@
-import { useState } from "react";
 import axios from "../utils/axios";
 
 interface NoteCardProp{
@@ -10,10 +9,7 @@ interface NoteCardProp{
 }
 
 const NoteCard=({title,body,date,id,onDelete}:NoteCardProp)=>{
-    const [isSharing, setIsSharing] = useState(false);
-
     const handleShare = async () => {
-        setIsSharing(true);
         try {
             await axios.post('/share/content', { contentId: id });
             const shareUrl = `${window.location.origin}/content/${id}`;
@@ -21,8 +17,6 @@ const NoteCard=({title,body,date,id,onDelete}:NoteCardProp)=>{
             window.open(shareUrl, '_blank');
         } catch (err) {
             console.error('Failed to share content:', err);
-        } finally {
-            setIsSharing(false);
         }
     };
     //for notes
